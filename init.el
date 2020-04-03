@@ -24,18 +24,21 @@
 (setq use-package-always-ensure t)
 
 
-;; Increase garbage collector threshold
+;; Increase garbage collection threshold
 
-(setq gc-cons-threshold 10000000)
+(setq gc-cons-threshold (* 100 1024 1024))
+
+
+;; Increase the size of data Emacs reads from processes, mainly for lsp-mode
+
+(setq read-process-output-max (* 1024 1024))
 
 
 ;; Restore gc threshold after startup
 
 (add-hook 'after-init-hook
           (lambda ()
-            (setq gc-cons-threshold 1000000)
-            (message "gc-cons-threshold restored to %S"
-                     gc-cons-threshold)))
+            (setq gc-cons-threshold (* 1024 1024))))
 
 
 ;; Set custom settings to load in own file
@@ -53,6 +56,11 @@
 
 (setq inhibit-startup-screen t)
 (setq initial-scratch-message nil)
+
+
+;;  maximize the frame
+
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 
 ;; moving between windows
@@ -106,14 +114,19 @@
 (setq kill-whole-line t)
 
 
-;;  maximize the frame
-
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
-
 
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
 ;; Packages
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;; Install the doom themes
+
+(use-package doom-themes
+  :config
+  (setq doom-themes-enable-bold t)
+  (setq doom-themes-enable-italic t)
+  (load-theme 'doom-vibrant t))
 
 
 ;; which-key displays available keybindings in popup
