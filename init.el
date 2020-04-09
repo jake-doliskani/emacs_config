@@ -114,6 +114,12 @@
 (setq kill-whole-line t)
 
 
+;; Matching pairs of parentheses and other characters
+
+(show-paren-mode 1)
+(setq show-paren-delay 0)
+(setq show-paren-style 'parenthesis)
+
 
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
 ;; Packages
@@ -187,13 +193,10 @@
 
 (use-package python
   :mode ("\\.py\\'" . python-mode)
-  :interpreter ("python" . python-mode))
+  :interpreter ("python" . python-mode)
+  :hook
+  (python-mode . lsp))
 
-(use-package lsp-python-ms		; MS lsp for Python
-  :ensure t
-  :hook (python-mode . (lambda ()
-                          (require 'lsp-python-ms)
-                          (lsp))))
 
 ;; Rust
 
@@ -214,6 +217,44 @@
   (with-eval-after-load 'rust-mode
     (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
 
+
+;; Latex
+
+(require 'lsp-clients)
+(add-hook 'latex-mode-hook 'lsp)
+(add-hook 'latex-mode-hook (lambda () (flyspell-mode 1)))
+
+;; Run Makefile using "C-c C-m"
+(add-hook 'latex-mode-hook (lambda ()
+			     (define-key latex-mode-map (kbd "C-c C-m") 'recompile)))
+
+(defun my-pdflatex-compile ()
+  "Run pdflatex on the current buffer."
+  (interactive)
+  (shell-command (concat "pdflatex " (buffer-file-name))))
+
+(add-hook 'latex-mode-hook (lambda ()
+			     (define-key latex-mode-map (kbd "C-c C-c") 'my-pdflatex-compile)))
+
+;; Line wrap at 100 characters
+(add-hook 'latex-mode-hook 'auto-fill-mode)
+(add-hook 'latex-mode-hook (lambda ()
+			     (setq fill-column 100)))
+;; (use-package tex
+;;   :ensure auctex
+;;   :mode ("\\.tex\\'" . latex-mode)
+;;   :config
+;;   (setq TeX-auto-save t)
+;;   (setq TeX-parse-self t)
+;;   (setq-default TeX-master nil)
+;;   ;; Update PDF buffers after successful LaTeX runs
+;;   (add-hook 'TeX-after-compilation-finished-functions
+;; 	    #'TeX-revert-document-buffer)
+;;   (add-hook 'LaTeX-mode-hook 'flyspell-mode))
+
+;; (use-package company-auctex
+;;   :ensure t
+;;   :init (company-auctex-init))
 
 
 
