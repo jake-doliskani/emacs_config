@@ -1,3 +1,15 @@
+;;; init.el --- Emacs configuration
+
+;; Author: Jake Doliskani <jake.doliskani@gmail.com>
+;; URL: https://doliskani.net/javad/
+
+;;; Commentary:
+;; 
+
+
+;;; Code:
+
+
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Setup
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
@@ -37,14 +49,13 @@
 ;; Restore gc threshold after startup
 
 (add-hook 'after-init-hook
-          (lambda ()
-            (setq gc-cons-threshold (* 1024 1024))))
+          (lambda () (setq gc-cons-threshold (* 1024 1024))))
 
 
 ;; Set custom settings to load in own file
 
-(setq custom-file (make-temp-file "emacs-custom"))
-
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(load custom-file)
 
 
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
@@ -86,14 +97,14 @@
 (global-display-line-numbers-mode)
 
 
+;; Enable visual line mode only for text mode
+
+(add-hook 'text-mode-hook 'turn-on-visual-line-mode)
+
+
 ;; Replace yes-or-no with y-or-n
 
 (defalias 'yes-or-no-p 'y-or-n-p)
-
-
-;; Tab width
-
-(setq tab-width 4)
 
 
 ;; Backups, different directory
@@ -130,17 +141,26 @@
 
 (use-package doom-themes
   :config
-  (setq doom-themes-enable-bold t)
-  (setq doom-themes-enable-italic t)
-  (load-theme 'doom-vibrant t))
+  (setq doom-themes-enable-bold nil)
+  (setq doom-themes-enable-italic nil)
+  (load-theme 'doom-vibrant t)
+  )
 
+
+;; adaptive wrap indents visual lines
+
+(use-package adaptive-wrap
+  :ensure t
+  :hook (visual-line-mode . adaptive-wrap-prefix-mode)
+ )
 
 ;; which-key displays available keybindings in popup
 
 (use-package which-key
   :ensure t
   :config
-  (which-key-mode 1))
+  (which-key-mode 1)
+  )
 
 
 ;; modular text completion framework
@@ -154,7 +174,8 @@
   (setq company-idle-delay 0)
   (setq company-tooltip-limit 20)
   (setq global-company-mode t)
-  :bind ("C-<tab>" . company-complete))
+  :bind ("C-<tab>" . company-complete)
+  )
 
 
 ;; Language Server Protocol (LSP)
@@ -167,7 +188,8 @@
   (setq lsp-eldoc-render-all t)
   (setq lsp-enable-completion-at-point t)
   (setq lsp-enable-xref t)
-  (setq lsp-enable-indentation t))
+  (setq lsp-enable-indentation t)
+  )
 
 (use-package company-lsp
   :after '(company lsp-mode)
@@ -175,18 +197,21 @@
   (setq company-lsp-cache-candidates t)
   (setq company-lsp-async t)
   (setq company-lsp-enable-snippet t)
-  (push 'company-lsp company-backends))
+  (push 'company-lsp company-backends)
+  )
 
 
 ;; syntax checking with flycheck
 
 (use-package flycheck
   :ensure t
-  :init (global-flycheck-mode))
+  :init (global-flycheck-mode)
+  )
 
 (use-package flycheck-pos-tip
   :after flycheck
-  :config (flycheck-pos-tip-mode))
+  :config (flycheck-pos-tip-mode)
+  )
 
 
 ;; Python
@@ -195,7 +220,8 @@
   :mode ("\\.py\\'" . python-mode)
   :interpreter ("python" . python-mode)
   :hook
-  (python-mode . lsp))
+  (python-mode . lsp)
+  )
 
 
 ;; Rust
@@ -207,39 +233,45 @@
   :bind
   ("C-c C-b" . rust-compile)
   ("C-c C-r" . rust-run)
-  ("C-c C-t" . rust-test))
+  ("C-c C-t" . rust-test)
+  )
 
 (use-package cargo
-  :hook (rust-mode . cargo-minor-mode))
+  :hook (rust-mode . cargo-minor-mode)
+  )
 
 (use-package flycheck-rust
   :config
   (with-eval-after-load 'rust-mode
-    (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
+    (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+  )
 
 
 ;; Latex
 
 (require 'lsp-clients)
 (add-hook 'latex-mode-hook 'lsp)
-(add-hook 'latex-mode-hook (lambda () (flyspell-mode 1)))
-
-;; Run Makefile using "C-c C-m"
-(add-hook 'latex-mode-hook (lambda ()
-			     (define-key latex-mode-map (kbd "C-c C-m") 'recompile)))
 
 (defun my-pdflatex-compile ()
   "Run pdflatex on the current buffer."
   (interactive)
-  (shell-command (concat "pdflatex " (buffer-file-name))))
+  (shell-command (concat "pdflatex " (buffer-file-name)))
+  )
 
 (add-hook 'latex-mode-hook (lambda ()
-			     (define-key latex-mode-map (kbd "C-c C-c") 'my-pdflatex-compile)))
+			     (flyspell-mode 1)
+			     ;; Run Makefile using "C-c C-m"
+			     (define-key latex-mode-map (kbd "C-c C-m") 'recompile)
+			     (define-key latex-mode-map (kbd "C-c C-c") 'my-pdflatex-compile)
+			     ;; indentation
+			     (setq indent-line-function 'indent-relative)
+			     (setq tab-width 4)
+			     (setq electric-indent-mode t)
+			     (setq tex-fontify-script nil)
+			     (custom-set-faces '(tex-verbatim ((t (:inherit default)))))
+			     )
+	  )
 
-;; Line wrap at 100 characters
-(add-hook 'latex-mode-hook 'auto-fill-mode)
-(add-hook 'latex-mode-hook (lambda ()
-			     (setq fill-column 100)))
 ;; (use-package tex
 ;;   :ensure auctex
 ;;   :mode ("\\.tex\\'" . latex-mode)
