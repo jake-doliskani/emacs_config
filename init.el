@@ -132,6 +132,11 @@
 (setq show-paren-style 'parenthesis)
 
 
+;; default tab width
+
+(setq-default tab-width 4)
+
+
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
 ;; Packages
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -252,25 +257,24 @@
 (require 'lsp-clients)
 (add-hook 'latex-mode-hook 'lsp)
 
-(defun my-pdflatex-compile ()
+(defun my-pdflatex-compile()
   "Run pdflatex on the current buffer."
   (interactive)
   (shell-command (concat "pdflatex " (buffer-file-name)))
   )
 
-(add-hook 'latex-mode-hook (lambda ()
-			     (flyspell-mode 1)
-			     ;; Run Makefile using "C-c C-m"
-			     (define-key latex-mode-map (kbd "C-c C-m") 'recompile)
-			     (define-key latex-mode-map (kbd "C-c C-c") 'my-pdflatex-compile)
-			     ;; indentation
-			     (setq indent-line-function 'indent-relative)
-			     (setq tab-width 4)
-			     (setq electric-indent-mode t)
-			     (setq tex-fontify-script nil)
-			     (custom-set-faces '(tex-verbatim ((t (:inherit default)))))
-			     )
-	  )
+(defun my-latex-setup()
+  (flyspell-mode 1)
+  ;; Run Makefile using "C-c C-m"
+  (define-key latex-mode-map (kbd "C-c C-m") 'recompile)
+  (define-key latex-mode-map (kbd "C-c C-c") 'my-pdflatex-compile)
+  (setq tex-indent-arg 4)
+  (setq tex-indent-basic 4)
+  (setq tex-indent-item 4)
+  (setq tex-fontify-script nil)
+  (custom-set-faces '(tex-verbatim ((t (:inherit default)))))
+  )
+(add-hook 'latex-mode-hook 'my-latex-setup)
 
 ;; (use-package tex
 ;;   :ensure auctex
