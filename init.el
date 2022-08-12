@@ -52,12 +52,6 @@
           (lambda () (setq gc-cons-threshold (* 1024 1024))))
 
 
-;; Set custom settings to load in own file
-
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(load custom-file)
-
-
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
 ;; Preferences
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -142,7 +136,7 @@
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;; Install the doom themes
+;; install the doom themes
 
 (use-package doom-themes
   :config
@@ -150,7 +144,6 @@
   (setq doom-themes-enable-italic nil)
   (load-theme 'doom-vibrant t)
   )
-
 
 ;; adaptive wrap indents visual lines
 
@@ -192,19 +185,8 @@
   (setq lsp-auto-execute-action t)
   (setq lsp-eldoc-render-all t)
   (setq lsp-enable-completion-at-point t)
-  (setq lsp-enable-xref t)
   (setq lsp-enable-indentation t)
   )
-
-(use-package company-lsp
-  :after '(company lsp-mode)
-  :config
-  (setq company-lsp-cache-candidates t)
-  (setq company-lsp-async t)
-  (setq company-lsp-enable-snippet t)
-  (push 'company-lsp company-backends)
-  )
-
 
 ;; syntax checking with flycheck
 
@@ -218,16 +200,14 @@
   :config (flycheck-pos-tip-mode)
   )
 
-
 ;; Python
 
-(use-package python
-  :mode ("\\.py\\'" . python-mode)
-  :interpreter ("python" . python-mode)
-  :hook
-  (python-mode . lsp)
+(use-package lsp-pyright
+  :ensure t
+  :hook (python-mode . (lambda ()
+                          (require 'lsp-pyright)
+                          (lsp)))
   )
-
 
 ;; Rust
 
@@ -236,9 +216,9 @@
   ((rust-mode . lsp)
    (rust-mode . (lambda () (setq indent-tabs-mode nil))))
   :bind
-  ("C-c C-b" . rust-compile)
-  ("C-c C-r" . rust-run)
-  ("C-c C-t" . rust-test)
+  (("C-c C-b" . rust-compile)
+   ("C-c C-r" . rust-run)
+   ("C-c C-t" . rust-test))
   )
 
 (use-package cargo
@@ -251,30 +231,40 @@
     (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
   )
 
-
 ;; Latex
 
-(require 'lsp-clients)
-(add-hook 'latex-mode-hook 'lsp)
-
-(defun my-pdflatex-compile()
-  "Run pdflatex on the current buffer."
-  (interactive)
-  (shell-command (concat "pdflatex " (buffer-file-name)))
-  )
-
-(defun my-latex-setup()
-  (flyspell-mode 1)
-  ;; Run Makefile using "C-c C-m"
-  (define-key latex-mode-map (kbd "C-c C-m") 'recompile)
-  (define-key latex-mode-map (kbd "C-c C-c") 'my-pdflatex-compile)
+(use-package lsp-latex
+  :config
   (setq tex-indent-arg 4)
   (setq tex-indent-basic 4)
   (setq tex-indent-item 4)
   (setq tex-fontify-script nil)
+  (flyspell-mode 1)
   (custom-set-faces '(tex-verbatim ((t (:inherit default)))))
+  (defun pdflatex-compile()
+  "Run pdflatex on the current buffer."
+    (interactive)
+    (shell-command (concat "pdflatex " (buffer-file-name))))
+  :bind
+  (:map latex-mode-map
+   ("C-c C-m" . recompile)
+   ("C-c C-c" . pdflatex-compile))
+  :hook
+  (latex-mode . lsp)
   )
-(add-hook 'latex-mode-hook 'my-latex-setup)
+
+;; (defun my-latex-setup()
+;;   (flyspell-mode 1)
+;;   ;; Run Makefile using "C-c C-m"
+;;   (define-key latex-mode-map (kbd "C-c C-m") 'recompile)
+;;   (define-key latex-mode-map (kbd "C-c C-c") 'my-pdflatex-compile)
+;;   (setq tex-indent-arg 4)
+;;   (setq tex-indent-basic 4)
+;;   (setq tex-indent-item 4)
+;;   (setq tex-fontify-script nil)
+;;   (custom-set-faces '(tex-verbatim ((t (:inherit default)))))
+;;   )
+;; (add-hook 'latex-mode-hook 'my-latex-setup)
 
 ;; (use-package tex
 ;;   :ensure auctex
@@ -308,11 +298,24 @@
 
 (defun unfill-region (beg end)
   "Unfill the region, joining text paragraphs into a single
-    logical line.  This is useful, e.g., for use with
-    `visual-line-mode'."
+   logical line.  This is useful, e.g., for use with
+   `visual-line-mode'."
   (interactive "*r")
   (let ((fill-column (point-max)))
     (fill-region beg end)))
 
 
 ;;; init ends here
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(lsp-latex lsp-pyright which-key use-package rust-mode lsp-mode flycheck-rust flycheck-pos-tip doom-themes company cargo adaptive-wrap)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
