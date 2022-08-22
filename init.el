@@ -145,12 +145,14 @@
   (load-theme 'doom-vibrant t)
   )
 
+
 ;; adaptive wrap indents visual lines
 
 (use-package adaptive-wrap
   :ensure t
   :hook (visual-line-mode . adaptive-wrap-prefix-mode)
  )
+
 
 ;; which-key displays available keybindings in popup
 
@@ -188,6 +190,7 @@
   (setq lsp-enable-indentation t)
   )
 
+
 ;; syntax checking with flycheck
 
 (use-package flycheck
@@ -200,6 +203,7 @@
   :config (flycheck-pos-tip-mode)
   )
 
+
 ;; Python
 
 (use-package lsp-pyright
@@ -208,6 +212,7 @@
                           (require 'lsp-pyright)
                           (lsp)))
   )
+
 
 ;; Rust
 
@@ -231,6 +236,7 @@
     (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
   )
 
+
 ;; Latex
 
 (use-package lsp-latex
@@ -252,6 +258,14 @@
   :hook
   (latex-mode . lsp)
   )
+
+
+;; lsp treemacs
+
+(use-package lsp-treemacs
+  :after lsp)
+
+
 
 ;; (defun my-latex-setup()
 ;;   (flyspell-mode 1)
