@@ -182,11 +182,11 @@
 
 (use-package lsp-mode
   :config
-  (setq lsp-diagnostic-package :flycheck)
+  (setq lsp-diagnostics-provider :flycheck)
   (setq lsp-enable-snippet t)
   (setq lsp-auto-execute-action t)
   (setq lsp-eldoc-render-all t)
-  (setq lsp-enable-completion-at-point t)
+  (setq lsp-completion-enable t)
   (setq lsp-enable-indentation t)
   )
 
