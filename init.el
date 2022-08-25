@@ -247,14 +247,17 @@
   (setq tex-fontify-script nil)
   (flyspell-mode 1)
   (custom-set-faces '(tex-verbatim ((t (:inherit default)))))
+  ;; I coudn't do the following using :bind, I was getting a weird error.
+  (eval-after-load 'tex-mode '(define-key latex-mode-map (kbd "C-c C-m") 'recompile))
+  (eval-after-load 'tex-mode '(define-key latex-mode-map (kbd "C-c C-c") 'pdflatex-compile))
   (defun pdflatex-compile()
   "Run pdflatex on the current buffer."
     (interactive)
     (shell-command (concat "pdflatex " (buffer-file-name))))
-  :bind
-  (:map latex-mode-map
-   ("C-c C-m" . recompile)
-   ("C-c C-c" . pdflatex-compile))
+  ;; :bind
+  ;; (:map latex-mode-map
+  ;;  ("C-c C-m" . recompile)
+  ;;  ("C-c C-c" . pdflatex-compile))
   :hook
   (latex-mode . lsp)
   )
@@ -267,39 +270,8 @@
 
 
 
-;; (defun my-latex-setup()
-;;   (flyspell-mode 1)
-;;   ;; Run Makefile using "C-c C-m"
-;;   (define-key latex-mode-map (kbd "C-c C-m") 'recompile)
-;;   (define-key latex-mode-map (kbd "C-c C-c") 'my-pdflatex-compile)
-;;   (setq tex-indent-arg 4)
-;;   (setq tex-indent-basic 4)
-;;   (setq tex-indent-item 4)
-;;   (setq tex-fontify-script nil)
-;;   (custom-set-faces '(tex-verbatim ((t (:inherit default)))))
-;;   )
-;; (add-hook 'latex-mode-hook 'my-latex-setup)
-
-;; (use-package tex
-;;   :ensure auctex
-;;   :mode ("\\.tex\\'" . latex-mode)
-;;   :config
-;;   (setq TeX-auto-save t)
-;;   (setq TeX-parse-self t)
-;;   (setq-default TeX-master nil)
-;;   ;; Update PDF buffers after successful LaTeX runs
-;;   (add-hook 'TeX-after-compilation-finished-functions
-;; 	    #'TeX-revert-document-buffer)
-;;   (add-hook 'LaTeX-mode-hook 'flyspell-mode))
-
-;; (use-package company-auctex
-;;   :ensure t
-;;   :init (company-auctex-init))
-
-
-
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
-;; Keybindings
+;; Global Keybindings
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
@@ -320,16 +292,3 @@
 
 
 ;;; init ends here
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(lsp-latex lsp-pyright which-key use-package rust-mode lsp-mode flycheck-rust flycheck-pos-tip doom-themes company cargo adaptive-wrap)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
