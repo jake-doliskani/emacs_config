@@ -138,11 +138,28 @@
 
 ;; install the doom themes
 
-(use-package doom-themes
+;; (use-package doom-themes
+;;   :config
+;;   (setq doom-themes-enable-bold nil)
+;;   (setq doom-themes-enable-italic nil)
+;;   (load-theme 'doom-one t)
+;;   ;; (load-theme 'doom-one-light t)
+;;   )
+
+
+;; install modus themes
+
+(use-package modus-themes
+  :ensure
+  :init
+  (setq modus-themes-italic-constructs nil
+        modus-themes-bold-constructs nil
+        modus-themes-region '(bg-only no-extend))
+  ;; Load the theme files before enabling a theme
+  (modus-themes-load-themes)
   :config
-  (setq doom-themes-enable-bold nil)
-  (setq doom-themes-enable-italic nil)
-  (load-theme 'doom-vibrant t)
+  (modus-themes-load-operandi)
+  :bind ("<f5>" . modus-themes-toggle)
   )
 
 
@@ -292,3 +309,17 @@
 
 
 ;;; init ends here
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(ispell-dictionary nil)
+ '(package-selected-packages
+   '(zenburn-theme yasnippet which-key use-package rust-mode lsp-treemacs lsp-pyright lsp-latex flycheck-rust flycheck-pos-tip doom-themes company cargo adaptive-wrap)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(tex-verbatim ((t (:inherit default)))))
