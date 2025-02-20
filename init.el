@@ -21,9 +21,10 @@
 ;; Set up repos
 
 (setq package-enable-at-startup nil)
-(setq package-archives
-      '(("elpa" . "https://elpa.gnu.org/packages/")
-        ("melpa" . "https://melpa.org/packages/")))
+(require 'package)
+(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+
 
 
 ;; Bootstrap use-package
@@ -138,29 +139,14 @@
 
 ;; install the doom themes
 
-;; (use-package doom-themes
-;;   :config
-;;   (setq doom-themes-enable-bold nil)
-;;   (setq doom-themes-enable-italic nil)
-;;   (load-theme 'doom-one t)
-;;   ;; (load-theme 'doom-one-light t)
-;;   )
-
-
-;; install modus themes
-
-(use-package modus-themes
-  :ensure
-  :init
-  (setq modus-themes-italic-constructs nil
-        modus-themes-bold-constructs nil
-        modus-themes-region '(bg-only no-extend))
-  ;; Load the theme files before enabling a theme
-  (modus-themes-load-themes)
+(use-package doom-themes
   :config
-  (modus-themes-load-operandi)
-  :bind ("<f5>" . modus-themes-toggle)
+  (setq doom-themes-enable-bold nil)
+  (setq doom-themes-enable-italic nil)
+  (load-theme 'doom-one t)
+  (load-theme 'doom-one-light t)
   )
+
 
 
 ;; adaptive wrap indents visual lines
@@ -168,7 +154,7 @@
 (use-package adaptive-wrap
   :ensure t
   :hook (visual-line-mode . adaptive-wrap-prefix-mode)
- )
+  )
 
 
 ;; which-key displays available keybindings in popup
@@ -226,8 +212,8 @@
 (use-package lsp-pyright
   :ensure t
   :hook (python-mode . (lambda ()
-                          (require 'lsp-pyright)
-                          (lsp)))
+                         (require 'lsp-pyright)
+                         (lsp)))
   )
 
 
@@ -256,27 +242,28 @@
 
 ;; Latex
 
-(use-package lsp-latex
+(use-package auctex
+  :ensure t
+  :mode ("\\.tex\\'" . LaTeX-mode) ; Use AUCTeX's LaTeX-mode for .tex files
+  :hook (LaTeX-mode . (lambda ()
+                        (turn-on-reftex)
+                        (local-set-key (kbd "C-c C-c") 'run-pdflatex)
+                        (local-set-key (kbd "C-c C-m") 'recompile)))
   :config
-  (setq tex-indent-arg 4)
-  (setq tex-indent-basic 4)
-  (setq tex-indent-item 4)
-  (setq tex-fontify-script nil)
-  (flyspell-mode 1)
-  (custom-set-faces '(tex-verbatim ((t (:inherit default)))))
-  ;; I coudn't do the following using :bind, I was getting a weird error.
-  (eval-after-load 'tex-mode '(define-key latex-mode-map (kbd "C-c C-m") 'recompile))
-  (eval-after-load 'tex-mode '(define-key latex-mode-map (kbd "C-c C-c") 'pdflatex-compile))
-  (defun pdflatex-compile()
-  "Run pdflatex on the current buffer."
+  (setq TeX-auto-save t)
+  (setq TeX-PDF-mode t)
+  (setq TeX-parse-self t)
+  (setq TeX-save-query nil)
+  (setq-default TeX-master nil)
+  (setq LaTeX-item-indent 0)
+  (setq LaTeX-indent-level 4)
+  (setq TeX-brace-indent-level 4)
+  (setq font-latex-fontify-script nil)
+  (setq TeX-show-compilation t)
+  (defun run-pdflatex()
+	"Run pdflatex on the current buffer."
     (interactive)
     (shell-command (concat "pdflatex " (buffer-file-name))))
-  ;; :bind
-  ;; (:map latex-mode-map
-  ;;  ("C-c C-m" . recompile)
-  ;;  ("C-c C-c" . pdflatex-compile))
-  :hook
-  (latex-mode . lsp)
   )
 
 
@@ -308,4 +295,6 @@
     (fill-region beg end)))
 
 
-;;; init ends here
+;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+;; End
+;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
