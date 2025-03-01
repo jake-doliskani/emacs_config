@@ -260,6 +260,7 @@
   (setq TeX-brace-indent-level 4)
   (setq font-latex-fontify-script nil)
   (setq TeX-show-compilation t)
+  (setq blink-matching-paren nil)
   (defun run-pdflatex()
 	"Run pdflatex on the current buffer."
     (interactive)
