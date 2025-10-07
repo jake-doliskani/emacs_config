@@ -214,6 +214,8 @@
   :hook (python-mode . (lambda ()
                          (require 'lsp-pyright)
                          (lsp)))
+  :config
+  (setq lsp-enable-file-watchers nil)
   )
 
 
@@ -247,10 +249,10 @@
   :mode ("\\.tex\\'" . LaTeX-mode) ; Use AUCTeX's LaTeX-mode for .tex files
   :hook (LaTeX-mode . (lambda ()
                         (turn-on-reftex)
-                        (local-set-key (kbd "C-c C-c") 'run-pdflatex)
                         (local-set-key (kbd "C-c C-m") 'recompile)))
   :config
   (setq TeX-auto-save t)
+  (setq TeX-command-force "LaTex")
   (setq TeX-PDF-mode t)
   (setq TeX-parse-self t)
   (setq TeX-save-query nil)
@@ -258,13 +260,11 @@
   (setq LaTeX-item-indent 0)
   (setq LaTeX-indent-level 4)
   (setq TeX-brace-indent-level 4)
+  (setq LaTeX-indent-environment-list '())
   (setq font-latex-fontify-script nil)
   (setq TeX-show-compilation t)
   (setq blink-matching-paren nil)
-  (defun run-pdflatex()
-	"Run pdflatex on the current buffer."
-    (interactive)
-    (shell-command (concat "pdflatex " (buffer-file-name))))
+  (setq use-file-dialog nil)
   )
 
 
