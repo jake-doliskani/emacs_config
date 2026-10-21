@@ -143,7 +143,6 @@
   :config
   (setq doom-themes-enable-bold nil)
   (setq doom-themes-enable-italic nil)
-  (load-theme 'doom-one t)
   (load-theme 'doom-one-light t)
   )
 
@@ -261,10 +260,12 @@
   (setq LaTeX-indent-level 4)
   (setq TeX-brace-indent-level 4)
   (setq LaTeX-indent-environment-list '())
-  (setq font-latex-fontify-script nil)
   (setq TeX-show-compilation t)
   (setq blink-matching-paren nil)
   (setq use-file-dialog nil)
+  (setq font-latex-fontify-sectioning 'color)
+  (setq font-latex-fontify-script nil)
+  (setq font-latex-fontify-bold nil)
   )
 
 
